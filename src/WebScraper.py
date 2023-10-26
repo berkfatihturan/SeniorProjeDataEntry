@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 
 # driver
-chrome_driver_path = "X:\BFT\Project\Python\chromedriver.exe"
+chrome_driver_path = "/usr/lib/chromium-browser/chromedriver"
 service = Service(chrome_driver_path)
 
 MAX_TOWN_CODE = 970
@@ -49,8 +49,11 @@ class WebScraper:
     def __init__(self, url):
         # open browser and go to page
         self.url = url
-        self.driver = webdriver.Chrome(service=service)
+        chrome_options = webdriver.ChromeOptions()
+        
+        self.driver = webdriver.Chrome(service=service, options=chrome_options)
         self.driver.get(self.url)
+        
         self.MsgSender = EmailSender()
 
         try:
