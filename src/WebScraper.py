@@ -7,6 +7,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import WebDriverException
 
 # driver
 chrome_driver_path = "/usr/lib/chromium-browser/chromedriver"
@@ -57,7 +58,7 @@ class WebScraper:
 
         self.driver = webdriver.Chrome(service=service, options=chrome_options)
         self.driver.get(self.url)
-        
+
         self.MsgSender = EmailSender()
 
         try:
@@ -67,11 +68,11 @@ class WebScraper:
             print("Cant Find Permission Page")
 
     #
-    def startScrapping(self):
+    def start_scrapping(self):
         for town_code in range(1, MAX_TOWN_CODE):
             for page_num in range(1, MAX_PAGE_NUM):
                 # The page with the advertisements opens.
-                self.driver.get(f"{self.url}&town={town_code}&page={page_num}")
+                self._open_ad_list_page(town_code=town_code, page_num=page_num)
 
                 # She opens the advertisement pages one by one. If there is no ad on the page, it closes an inner loop.
                 try:
@@ -80,7 +81,7 @@ class WebScraper:
                 except NoSuchElementException:
                     # find all adv in page and open in order and write data to file
                     for advertItem in self.driver.find_elements(By.CSS_SELECTOR, '[id^="listing"]'):
-                        self._openAdvertisementPage(advertItem)
+                        self._get_data_from_advertisement_page(advertItem)
                 else:
                     # If no error is received, there is no advertisement on this page. Move on to another TOWN.
                     break
@@ -91,16 +92,16 @@ class WebScraper:
         # If process is done, send an e-mail to the users
         self.MsgSender.send_email_to_all(msg_code=MSG_CODE_PROCESS_DONE)
 
-
     # Opens the ad page.
-    def _openAdvertisementPage(self, advertItem):
+    def _get_data_from_advertisement_page(self, advertItem):
         # get ad
         ad_link = advertItem.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
         # Since a new page needs to be opened, the home page is kept here.
         original_windows = self.driver.current_window_handle
         # A new page opens and you enter the advertisement page.
         self.driver.switch_to.new_window('tab')
-        self.driver.get(ad_link)
+        # open ad page
+        self._open_ad_page(ad_link)
 
         # getting and formatting data in here
         data = self._getData()
@@ -114,6 +115,25 @@ class WebScraper:
         self.driver.switch_to.window(original_windows)
         return 0
 
+    def _open_ad_list_page(self, town_code, page_num):
+        try:
+            self.driver.get(f"{self.url}&town={town_code}&page={page_num}")
+        except WebDriverException:
+            print("waiting internet connection...")
+            self._open_ad_list_page(town_code, page_num)
+            time.sleep(10)
+        else:
+            print("Connection Ok..")
+
+    def _open_ad_page(self, ad_link):
+        try:
+            self.driver.get(ad_link)
+        except WebDriverException:
+            print("waiting internet connection...")
+            time.sleep(10)
+            self._open_ad_page(ad_link)
+        else:
+            print("Connection Ok..")
 
     # It takes the data from the page and organizes it.
     def _getData(self):
