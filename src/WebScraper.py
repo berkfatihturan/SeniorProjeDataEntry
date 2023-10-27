@@ -50,7 +50,11 @@ class WebScraper:
         # open browser and go to page
         self.url = url
         chrome_options = webdriver.ChromeOptions()
-        
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+
         self.driver = webdriver.Chrome(service=service, options=chrome_options)
         self.driver.get(self.url)
         
