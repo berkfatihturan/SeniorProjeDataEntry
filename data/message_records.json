@@ -1,18 +1,18 @@
 {
   "0": {
     "sub": "[ERR_00] !! Beklenmedik Bir Durum Oluştu !!",
-    "msg": "00 \nBeklenmedik Bir Durum Oluştu. Lütfen Cihazı Kontrol Ediniz."
+    "msg": "00 \nBeklenmedik Bir Durum Oluştu. Lütfen Cihazı Kontrol Ediniz.\n"
   },
   "1": {
     "sub": "[01] !! {page_num} numaralı sayfanın tarama işlemi bitti !!",
-    "msg": "STATUS_01  \n{town_id} numaralı yerleşim yerinin {page_num} numaralı sayfasının tarama işlemi bitti. \nDURUM : {town_id}/970"
+    "msg": "STATUS_01  \n{town_id} numaralı yerleşim yerinin {page_num} numaralı sayfasının tarama işlemi bitti. \nDURUM : {town_id}/970\n"
   },
   "2": {
     "sub": "[02] !! {town_id} numaralı yerleşim yerinin tarama işlemi bitti !!",
-    "msg": "STATUS_02  \n{town_id} numaralı yerleşim yerinin tarama işlemi bitti. \nDURUM : {town_id}/970"
+    "msg": "STATUS_02  \n{town_id} numaralı yerleşim yerinin tarama işlemi bitti. \nDURUM : {town_id}/970\n"
   },
   "3": {
     "sub": "[03] !! İşlem Tamamlandı !!",
-    "msg": "COMPLETED  \nWeb Scrapping İşlemi Tamamlandı. Cihazı Kapatabilirsiniz. :D"
+    "msg": "COMPLETED  \nWeb Scrapping İşlemi Tamamlandı. Cihazı Kapatabilirsiniz. :D\n"
   }
 }

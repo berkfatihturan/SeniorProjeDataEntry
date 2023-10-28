@@ -32,10 +32,10 @@ class WebScraper:
 
         # set chrome driver settings
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
+        # chrome_options.add_argument("--headless")
+        # chrome_options.add_argument("--disable-gpu")
+        # chrome_options.add_argument("--no-sandbox")
+        # chrome_options.add_argument("--disable-dev-shm-usage")
         self.driver = webdriver.Chrome(service=service, options=chrome_options)
 
         # open browser and go to page
@@ -87,7 +87,6 @@ class WebScraper:
         print(data)
         self.DBHandler.add_data(data=json.dumps(data))
         print("------------------")
-        time.sleep(1)
 
         # The ad page is closed and return to the main page.
         self.driver.close()
@@ -102,7 +101,7 @@ class WebScraper:
             self._open_ad_list_page(town_code, page_num)
             time.sleep(10)
         else:
-            print("Connection Ok..")
+            print("Connection Ok...[Main Page Loaded]")
 
     def _open_ad_page(self, ad_link):
         try:
@@ -112,7 +111,7 @@ class WebScraper:
             time.sleep(10)
             self._open_ad_page(ad_link)
         else:
-            print("Connection Ok..")
+            print("Connection Ok...[Ad Page Loaded]")
 
     # It takes the data from the page and organizes it.
     @property
