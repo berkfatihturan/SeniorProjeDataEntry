@@ -1,7 +1,8 @@
 import time
 import json
-import pandas as pd
+
 from src.EmailSender import EmailSender
+from src.DatabaseHandler import DatabaseHandler
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -16,51 +17,29 @@ service = Service(chrome_driver_path)
 MAX_TOWN_CODE = 970
 MAX_PAGE_NUM = 51
 
-MSG_CODE_PAGE_DONE = 0
-MSG_CODE_TOWN_DONE = 1
-MSG_CODE_PROCESS_DONE = 2
-
-
-def json_to_excel(json_data, excel_file):
-    try:
-        # Excel dosyasını oku (varsa) veya yeni bir dosya oluştur
-        try:
-            df = pd.read_excel(excel_file)
-        except FileNotFoundError:
-            df = pd.DataFrame()
-
-        # JSON verisini bir DataFrame'e çevir
-        new_data = json.loads(json_data)
-        new_df = pd.json_normalize(new_data)
-
-        # DataFrame'i genişleterek birleştir
-        df = pd.concat([df, new_df], axis=0, ignore_index=True)
-
-        # DataFrame'i Excel dosyasına yaz
-        df.to_excel(excel_file, index=False)
-
-        print("Veri başarıyla Excel dosyasına eklendi.")
-
-    except Exception as e:
-        print(f"Hata oluştu: {str(e)}")
+# email msg code
+MSG_CODE_PAGE_DONE = 1
+MSG_CODE_TOWN_DONE = 2
+MSG_CODE_PROCESS_DONE = 3
 
 
 class WebScraper:
 
     def __init__(self, url):
-        # open browser and go to page
         self.url = url
+        self.MsgSender = EmailSender()
+        self.DBHandler = DatabaseHandler()
+
+        # set chrome driver settings
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
-
         self.driver = webdriver.Chrome(service=service, options=chrome_options)
+
+        # open browser and go to page
         self.driver.get(self.url)
-
-        self.MsgSender = EmailSender()
-
         try:
             # close permission page
             self.driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]').click()
@@ -93,20 +72,20 @@ class WebScraper:
         self.MsgSender.send_email_to_all(msg_code=MSG_CODE_PROCESS_DONE)
 
     # Opens the ad page.
-    def _get_data_from_advertisement_page(self, advertItem):
+    def _get_data_from_advertisement_page(self, advert_item):
         # get ad
-        ad_link = advertItem.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
+        ad_link = advert_item.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
         # Since a new page needs to be opened, the home page is kept here.
         original_windows = self.driver.current_window_handle
-        # A new page opens and you enter the advertisement page.
+        # A new page opens, and you enter the advertisement page.
         self.driver.switch_to.new_window('tab')
         # open ad page
         self._open_ad_page(ad_link)
 
         # getting and formatting data in here
-        data = self._getData()
+        data = self._collect_data
         print(data)
-        json_to_excel(json.dumps(data), 'data/veri.xlsx')
+        self.DBHandler.add_data(data=json.dumps(data))
         print("------------------")
         time.sleep(1)
 
@@ -136,27 +115,39 @@ class WebScraper:
             print("Connection Ok..")
 
     # It takes the data from the page and organizes it.
-    def _getData(self):
-        jsonData = {}
+    @property
+    def _collect_data(self):
+        json_data = {}
+        json_data = self._get_overview_data(json_data)
+        json_data = self._get_price_data(json_data)
+        json_data = self._get_damage_data(json_data)
+        return json_data
+
+    def _get_price_data(self, json_data):
+        json_data["Fiyat"] = self.driver.find_element(By.CLASS_NAME, 'product-price-container').text[:-3]
+        return json_data
+
+    def _get_overview_data(self, json_data):
         # get overview info /* start */
         for propertyItem_overview in self.driver.find_elements(By.CSS_SELECTOR, '[class*="property-item"]'):
-            propertyItem_Title = propertyItem_overview.find_element(By.CLASS_NAME, 'property-key').text
-            propertyItem_Value = propertyItem_overview.find_element(By.CLASS_NAME, 'property-value').text
-            jsonData[propertyItem_Title] = propertyItem_Value
+            property_item_title = propertyItem_overview.find_element(By.CLASS_NAME, 'property-key').text
+            property_item_value = propertyItem_overview.find_element(By.CLASS_NAME, 'property-value').text
+            json_data[property_item_title] = property_item_value
         # get overview info /* end */
+        return json_data
 
+    def _get_damage_data(self, json_data):
         # get damage info /* start */
         # Check the items in the damage list on the page
         for propertyItem_damageInfo in self.driver.find_elements(By.CSS_SELECTOR, '[class*="car-damage-info"]'):
 
-            propertyItem_Title = propertyItem_damageInfo.find_element(By.CSS_SELECTOR, 'p').text
+            property_item_title = propertyItem_damageInfo.find_element(By.CSS_SELECTOR, 'p').text
 
             # sort car parts by damage category
             for carParts in propertyItem_damageInfo.find_elements(By.CSS_SELECTOR, 'ul li'):
-                partName = carParts.text
+                part_name = carParts.text
                 # If category is null - sends it back to avoid being added to the list
-                if partName != '-':
-                    jsonData[partName] = propertyItem_Title
+                if part_name != '-':
+                    json_data[part_name] = property_item_title
         # get damage info /* end */
-
-        return jsonData
+        return json_data

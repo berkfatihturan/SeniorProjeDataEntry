@@ -3,9 +3,10 @@ import json
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-Users = ["fatihliler32@gmail.com","nihat0851@gmail.com"]
+Users = ["fatihliler32@gmail.com", "nihat0851@gmail.com"]
 
 Message = json.load(open('data/message_records.json'))
+
 
 class EmailSender:
     def __init__(self):
@@ -14,13 +15,11 @@ class EmailSender:
         self.sender_email = "testtest12323123@gmail.com"
         self.sender_password = "rrau dgea szak cudw"
 
-
-    def send_email_to_all(self,msg_code=0):
+    def send_email_to_all(self, msg_code=0, town_id=0, page_num=0):
         for user_mail in Users:
-            email_subject = Message[str(msg_code)]["sub"]
-            email_message = Message[str(msg_code)]["msg"]
+            email_subject = Message[str(msg_code)]["sub"].replace("{page_num}", str(page_num)).replace("{town_id}", str(town_id))
+            email_message = Message[str(msg_code)]["msg"].replace("{page_num}", str(page_num)).replace("{town_id}", str(town_id))
             self._send_email(to_email=user_mail, subject=email_subject, message=email_message)
-
 
     def _send_email(self, to_email, subject, message):
         try:
@@ -45,5 +44,3 @@ class EmailSender:
             print("E-posta başarıyla gönderildi.")
         except Exception as e:
             print(f"E-posta gönderirken bir hata oluştu: {str(e)}")
-
-
