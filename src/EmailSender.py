@@ -1,5 +1,6 @@
 import smtplib
 import json
+import config
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -10,10 +11,10 @@ Message = json.load(open('data/message_records.json'))
 
 class EmailSender:
     def __init__(self):
-        self.smtp_server = "smtp.gmail.com"
-        self.smtp_port = 587
-        self.sender_email = "testtest12323123@gmail.com"
-        self.sender_password = "rrau dgea szak cudw"
+        self.smtp_server = config.SMTP_SERVER
+        self.smtp_port = config.SMTP_PORT
+        self.sender_email = config.FROM_EMAIL
+        self.sender_password = config.MAIL_PASSWORD
 
     def send_email_to_all(self, msg_code=0, town_id=0, page_num=0, err_msg=""):
         for user_mail in Users:

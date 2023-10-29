@@ -9,18 +9,11 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
+import config
 
 # driver
 chrome_driver_path = "/usr/lib/chromium-browser/chromedriver"
 service = Service(chrome_driver_path)
-
-MAX_TOWN_CODE = 970
-MAX_PAGE_NUM = 51
-
-# email msg code
-MSG_CODE_PAGE_DONE = 1
-MSG_CODE_TOWN_DONE = 2
-MSG_CODE_PROCESS_DONE = 3
 
 
 class WebScraper:
@@ -48,8 +41,8 @@ class WebScraper:
 
     #
     def start_scrapping(self):
-        for town_code in range(1, MAX_TOWN_CODE):
-            for page_num in range(1, MAX_PAGE_NUM):
+        for town_code in range(1, config.MAX_TOWN_CODE):
+            for page_num in range(1, config.MAX_PAGE_NUM):
                 # The page with the advertisements opens.
                 self._open_ad_list_page(town_code=town_code, page_num=page_num)
 
@@ -65,11 +58,12 @@ class WebScraper:
                     # If no error is received, there is no advertisement on this page. Move on to another TOWN.
                     break
                 # If the page is finished, send an e-mail to the users
-                self.MsgSender.send_email_to_all(msg_code=MSG_CODE_PAGE_DONE,town_id=town_code,page_num=page_num)
+                self.MsgSender.send_email_to_all(msg_code=config.MSG_CODE_PAGE_DONE, town_id=town_code,
+                                                 page_num=page_num)
             # If the settlement is finished, send an e-mail to the users
-            self.MsgSender.send_email_to_all(msg_code=MSG_CODE_TOWN_DONE,town_id=town_code)
+            self.MsgSender.send_email_to_all(msg_code=config.MSG_CODE_TOWN_DONE, town_id=town_code)
         # If process is done, send an e-mail to the users
-        self.MsgSender.send_email_to_all(msg_code=MSG_CODE_PROCESS_DONE)
+        self.MsgSender.send_email_to_all(msg_code=config.MSG_CODE_PROCESS_DONE)
 
     # Opens the ad page.
     def _get_data_from_advertisement_page(self, advert_item):
@@ -85,7 +79,7 @@ class WebScraper:
         # getting and formatting data in here
         data = self._collect_data
         print(data)
-        self.DBHandler.add_data(data=json.dumps(data))
+        self.DBHandler.add_data(data=data)
         print("------------------")
 
         # The ad page is closed and return to the main page.
