@@ -1,13 +1,24 @@
 import pymongo
 import config
+from src.EmailSender import EmailSender
 
-client = pymongo.MongoClient(config.DB_URI)
-mydb = client[config.DB_NAME]
-mycoll = mydb[config.DB_COLLECTION]
 class DatabaseHandler:
-    def __int__(self):
-        pass
+
+    def __init__(self):
+        self.client = pymongo.MongoClient(config.DB_URI)
+        self.mydb = self.client[config.DB_NAME]
+        self.mycoll = self.mydb[config.DB_COLLECTION]
+        self.MsgSender = EmailSender()
 
     def add_data(self, data):
-        mycoll.insert_one(data)
-        print("Veri ekleme tamamlandı.")
+        try:
+            self.mycoll.insert_one(data)
+        except:
+            self._send_err()
+        else:
+            print("Veri ekleme tamamlandı.")
+
+    def _send_err(self):
+        err_str = "[DATA EKLENEMEDİ]"
+        print(err_str)
+        self.MsgSender.send_email_to_all(msg_code=0, err_msg=str(err_str))
