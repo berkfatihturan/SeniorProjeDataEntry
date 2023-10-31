@@ -25,12 +25,12 @@ class WebScraper:
 
         # set chrome driver settings
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.addArguments("start-maximized"); // open Browser in maximized mode
-        chrome_options.addArguments("disable-infobars"); // disabling infobars
-        chrome_options.addArguments("--disable-extensions"); // disabling extensions
-        chrome_options.addArguments("--disable-gpu"); // applicable to windows os only
-        chrome_options.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
-        chrome_options.addArguments("--no-sandbox"); // Bypass OS security model
+        chrome_options.addArguments("start-maximized");
+        chrome_options.addArguments("disable-infobars");
+        chrome_options.addArguments("--disable-extensions"); 
+        chrome_options.addArguments("--disable-gpu"); 
+        chrome_options.addArguments("--disable-dev-shm-usage"); 
+        chrome_options.addArguments("--no-sandbox");
         self.driver = webdriver.Chrome(service=service, options=chrome_options)
 
         # open browser and go to page
