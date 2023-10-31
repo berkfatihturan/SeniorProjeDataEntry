@@ -1,7 +1,10 @@
+import time
+
 from src.WebScraper import WebScraper
 from src.EmailSender import EmailSender
 
 url = "https://www.arabam.com/ikinci-el?take=50"
+print(open('data/header.txt','r').read())
 CarScraper = WebScraper(url=url)
 try:
     CarScraper.start_scrapping()

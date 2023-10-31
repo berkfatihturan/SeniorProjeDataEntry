@@ -15,10 +15,10 @@ class DatabaseHandler:
             self.mycoll.insert_one(data)
         except:
             self._send_err()
-        else:
-            print("Veri ekleme tamamlandı.")
+        # else:
+        #     print("Veri ekleme tamamlandı.")
 
     def _send_err(self):
         err_str = "[DATA EKLENEMEDİ]"
-        print(err_str)
+        # print(err_str)
         self.MsgSender.send_email_to_all(msg_code=0, err_msg=str(err_str))

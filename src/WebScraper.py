@@ -9,6 +9,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import ElementClickInterceptedException
 import config
 
 # driver
@@ -20,18 +21,19 @@ class WebScraper:
 
     def __init__(self, url):
         self.url = url
+        self.counter = 0
         self.MsgSender = EmailSender()
         self.DBHandler = DatabaseHandler()
 
         # set chrome driver settings
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument("--headless")
-        chrome_options.add_argument("start-maximized");
-        chrome_options.add_argument("disable-infobars");
-        chrome_options.add_argument("--disable-extensions"); 
-        chrome_options.add_argument("--disable-gpu"); 
-        chrome_options.add_argument("--disable-dev-shm-usage"); 
-        chrome_options.add_argument("--no-sandbox");
+        chrome_options.add_argument("start-maximized")
+        chrome_options.add_argument("disable-infobars")
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--no-sandbox")
         self.driver = webdriver.Chrome(service=service, options=chrome_options)
 
         # open browser and go to page
@@ -39,7 +41,7 @@ class WebScraper:
         try:
             # close permission page
             self.driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]').click()
-        except NoSuchElementException:
+        except NoSuchElementException or ElementClickInterceptedException:
             print("Cant Find Permission Page")
 
     #
@@ -57,6 +59,10 @@ class WebScraper:
                     # find all adv in page and open in order and write data to file
                     for advertItem in self.driver.find_elements(By.CSS_SELECTOR, '[id^="listing"]'):
                         self._get_data_from_advertisement_page(advertItem)
+                        self.counter = self.counter + 1
+
+                        print(" ", end="\r", flush=True)
+                        print(f"Process on {self.counter}/100.000", end="")
                 else:
                     # If no error is received, there is no advertisement on this page. Move on to another TOWN.
                     break
@@ -81,9 +87,9 @@ class WebScraper:
 
         # getting and formatting data in here
         data = self._collect_data
-        print(data)
         self.DBHandler.add_data(data=data)
-        print("------------------")
+        # print(data)
+        # print("------------------")
 
         # The ad page is closed and return to the main page.
         self.driver.close()
@@ -94,33 +100,36 @@ class WebScraper:
         try:
             self.driver.get(f"{self.url}&town={town_code}&page={page_num}")
         except WebDriverException:
-            print("waiting internet connection...")
+            print("\nwaiting internet connection...")
             self._open_ad_list_page(town_code, page_num)
             time.sleep(10)
-        else:
-            print("Connection Ok...[Main Page Loaded]")
+        # else:
+        #     print("Connection Ok...[Main Page Loaded]")
 
     def _open_ad_page(self, ad_link):
         try:
             self.driver.get(ad_link)
         except WebDriverException:
-            print("waiting internet connection...")
+            print("\nwaiting internet connection...")
             time.sleep(10)
             self._open_ad_page(ad_link)
-        else:
-            print("Connection Ok...[Ad Page Loaded]")
+        # else:
+        #     print("Connection Ok...[Ad Page Loaded]")
 
     # It takes the data from the page and organizes it.
     @property
     def _collect_data(self):
         json_data = {}
-        json_data = self._get_overview_data(json_data)
-        json_data = self._get_price_data(json_data)
-        json_data = self._get_damage_data(json_data)
+        try:
+            json_data = self._get_overview_data(json_data)
+            json_data = self._get_price_data(json_data)
+            json_data = self._get_damage_data(json_data)
+        except:
+            pass
         return json_data
 
     def _get_price_data(self, json_data):
-        json_data["Fiyat"] = self.driver.find_element(By.CLASS_NAME, 'product-price-container').text[:-3]
+        json_data["Fiyat"] = self.driver.find_element(By.CLASS_NAME, 'product-price').text[:-3]
         return json_data
 
     def _get_overview_data(self, json_data):
@@ -144,6 +153,15 @@ class WebScraper:
                 part_name = carParts.text
                 # If category is null - sends it back to avoid being added to the list
                 if part_name != '-':
-                    json_data[part_name] = property_item_title
+                    if property_item_title == "Orjinal":
+                        json_data[part_name] = 0
+                    elif property_item_title == "Lokal boyalı":
+                        json_data[part_name] = 1
+                    elif property_item_title == "Boyalı":
+                        json_data[part_name] = 2
+                    elif property_item_title == "Değişmiş":
+                        json_data[part_name] = 3
+                    elif property_item_title == "Belirtilmemiş":
+                        json_data[part_name] = 4
         # get damage info /* end */
         return json_data
