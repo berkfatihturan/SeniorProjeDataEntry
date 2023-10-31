@@ -82,7 +82,7 @@ class WebScraper:
         # getting and formatting data in here
         data = self._collect_data
         print(data)
-        self.DBHandler.add_data(data=data)
+        self.DBHandler().add_data(data=data)
         print("------------------")
 
         # The ad page is closed and return to the main page.
