@@ -2,7 +2,7 @@ import pymongo
 import config
 
 client = pymongo.MongoClient(config.DB_URI)
-mydb = self.client[config.DB_NAME]
+mydb = client[config.DB_NAME]
 mycoll = mydb[config.DB_COLLECTION]
 class DatabaseHandler:
     def __int__(self):
