@@ -61,7 +61,7 @@ class WebScraper:
                         self._get_data_from_advertisement_page(advertItem)
                         self.counter = self.counter + 1
 
-                        print(" ", end="\r", flush=True)
+                        # print(" ", end="\r", flush=True)
                         print(f"Process on {self.counter}/100.000", end="")
                 else:
                     # If no error is received, there is no advertisement on this page. Move on to another TOWN.
@@ -88,8 +88,8 @@ class WebScraper:
         # getting and formatting data in here
         data = self._collect_data
         self.DBHandler.add_data(data=data)
-        print(data)
-        print("------------------")
+        # print(data)
+        # print("------------------")
 
         # The ad page is closed and return to the main page.
         self.driver.close()
@@ -103,8 +103,8 @@ class WebScraper:
             print("\nwaiting internet connection...")
             self._open_ad_list_page(town_code, page_num)
             time.sleep(10)
-        else:
-            print("Connection Ok...[Main Page Loaded]")
+        # else:
+        #     print("Connection Ok...[Main Page Loaded]")
 
     def _open_ad_page(self, ad_link):
         try:
@@ -113,8 +113,8 @@ class WebScraper:
             print("\nwaiting internet connection...")
             time.sleep(10)
             self._open_ad_page(ad_link)
-        else:
-            print("Connection Ok...[Ad Page Loaded]")
+        # else:
+        #     print("Connection Ok...[Ad Page Loaded]")
 
     # It takes the data from the page and organizes it.
     @property
