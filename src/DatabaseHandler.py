@@ -15,8 +15,8 @@ class DatabaseHandler:
             self.mycoll.insert_one(data)
         except:
             self._send_err()
-        # else:
-        #     print("Veri ekleme tamamlandı.")
+        else:
+            print("Veri ekleme tamamlandı.")
 
     def _send_err(self):
         err_str = "[DATA EKLENEMEDİ]"
