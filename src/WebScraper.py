@@ -62,7 +62,7 @@ class WebScraper:
                         self.counter = self.counter + 1
 
                         # print(" ", end="\r", flush=True)
-                        print(f"Process on {self.counter}/100.000", end="")
+                        print(f"Process on {self.counter}/100.000\n", end="")
                 else:
                     # If no error is received, there is no advertisement on this page. Move on to another TOWN.
                     break
