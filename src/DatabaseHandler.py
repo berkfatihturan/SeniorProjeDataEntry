@@ -16,9 +16,9 @@ class DatabaseHandler:
         except:
             self._send_err()
         else:
-            print("Veri ekleme tamamlandı.")
+            print(F"Data retrieval successful...[COMPLETED]")
 
     def _send_err(self):
         err_str = "[DATA EKLENEMEDİ]"
         print(err_str)
-        self.MsgSender.send_email_to_all(msg_code=0, err_msg=str(err_str))
+        self.MsgSender.send_email_to_all(msg_code=4, err_msg=str(err_str))

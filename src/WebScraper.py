@@ -87,8 +87,8 @@ class WebScraper:
 
         # getting and formatting data in here
         data = self._collect_data
+        print(f"Data has been successfully scraped...[{data['İlan No']}]")
         self.DBHandler.add_data(data=data)
-        print(data)
         print("------------------")
 
         # The ad page is closed and return to the main page.

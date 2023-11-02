@@ -14,5 +14,9 @@
   "3": {
     "sub": "[03] !! İşlem Tamamlandı !!",
     "msg": "COMPLETED  \nWeb Scrapping İşlemi Tamamlandı. Cihazı Kapatabilirsiniz. :D\n"
+  },
+  "4": {
+    "sub": "[ERR_01] !! Beklenmedik Bir Durum Oluştu !!",
+    "msg": "04 \nVeri Eklenemedi. Lütfen Cihazı Kontrol Ediniz.\n"
   }
 }
