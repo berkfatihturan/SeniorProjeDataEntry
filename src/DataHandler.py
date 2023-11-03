@@ -12,6 +12,7 @@ class DataHandler:
         try:
             json_data = self._get_overview_data(json_data)
             json_data = self._get_price_data(json_data)
+            json_data = self._get_description_data(json_data)
             json_data = self._get_damage_data(json_data)
         except:
             print("HATA....[-1]")
@@ -19,6 +20,10 @@ class DataHandler:
 
     def _get_price_data(self, json_data):
         json_data["Fiyat"] = self.driver.find_element(By.CLASS_NAME, 'product-price').text[:-3]
+        return json_data
+
+    def _get_description_data(self,json_data):
+        json_data["Description"] = self.driver.find_element(By.ID, 'tab-description').text
         return json_data
 
     def _get_overview_data(self, json_data):

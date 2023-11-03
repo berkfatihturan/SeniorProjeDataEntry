@@ -32,7 +32,7 @@ class StateSaver:
         self.file_path = config.SAVE_FILE_PATH
 
     def get_last_position(self):
-        global last_position
+        last_position : int
         try:
             with open(self.file_path, "r") as file:
                 last_position = int(json.load(file)["town_code"])
@@ -42,7 +42,18 @@ class StateSaver:
         finally:
             return last_position
 
-    def save_last_position(self, town_code,counter):
+    def get_last_page_num(self):
+        last_page_num : int
+        try:
+            with open(self.file_path, "r") as file:
+                last_page_num = int(json.load(file)["page_num"])
+        except FileNotFoundError:
+            # If the file is not found or it's the first run, set the last_position to 0
+            last_page_num = 1
+        finally:
+            return last_page_num
+
+    def save_last_position(self, town_code,page_num,counter):
         try:
             with open(self.file_path, "r") as file:
                 data = json.load(file)
@@ -51,6 +62,7 @@ class StateSaver:
             with open(self.file_path, "w") as file:
                 data["town_code"] = town_code
                 data["counter"] = counter
+                data["page_num"] = page_num
                 json.dump(data, file)
         except Exception as e:
             print(f"An error occurred: {e}")

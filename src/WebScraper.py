@@ -51,11 +51,17 @@ class WebScraper:
     def start_scrapping(self):
         # get current_town_code???
         current_town_code = self.StateSaver.get_last_position()
+        current_page_num = self.StateSaver.get_last_page_num()
+
         for town_code in range(current_town_code, config.MAX_TOWN_CODE):
             print(F"Town Code...[{town_code}]")
-            for page_num in range(1, config.MAX_PAGE_NUM):
+            for page_num in range(current_page_num, config.MAX_PAGE_NUM):
+                print(F"Page Num...[{page_num}]")
                 # The page with the advertisements opens.
                 self._open_ad_list_page(town_code=town_code, page_num=page_num)
+
+                # save town_code to state.json file
+                self.StateSaver.save_last_position(town_code=town_code, page_num=page_num, counter=self.counter)
 
                 # She opens the advertisement pages one by one. If there is no ad on the page, it closes an inner loop.
                 try:
@@ -63,21 +69,24 @@ class WebScraper:
                     self.driver.find_element(By.CLASS_NAME, 'no-result-content')
                 except NoSuchElementException:
                     # find all adv in page and open in order and write data to file
-                    for advertItem in self.driver.find_elements(By.CSS_SELECTOR, '[id^="listing"]'):
-                        self._get_data_from_advertisement_page(advertItem)
-                        self.counter = self.counter + 1
+                    self._scrapping_ad_on_page()
                 else:
                     # If no error is received, there is no advertisement on this page. Move on to another TOWN.
                     break
+
                 # If the page is finished, send an e-mail to the users
                 self.MsgSender.send_email_to_all(msg_code=config.MSG_CODE_PAGE_DONE, town_id=town_code,
                                                  page_num=page_num)
-            # save town_code to state.json file
-            self.StateSaver.save_last_position(town_code=town_code,counter=self.counter)
             # If the settlement is finished, send an e-mail to the users
             self.MsgSender.send_email_to_all(msg_code=config.MSG_CODE_TOWN_DONE, town_id=town_code)
         # If process is done, send an e-mail to the users
         self.MsgSender.send_email_to_all(msg_code=config.MSG_CODE_PROCESS_DONE)
+
+    def _scrapping_ad_on_page(self):
+        # find all adv in page and open in order and write data to file
+        for advertItem in self.driver.find_elements(By.CSS_SELECTOR, '[id^="listing"]'):
+            self._get_data_from_advertisement_page(advertItem)
+            self.counter = self.counter + 1
 
     # Opens the ad page.
     def _get_data_from_advertisement_page(self, advert_item):
