@@ -4,9 +4,7 @@ import config
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-Users = ["fatihliler32@gmail.com", "nihat0851@gmail.com"]
-
-Message = json.load(open('data/message_records.json'))
+Message = json.load(open(config.MESSAGE_FILE_PATH))
 
 
 class EmailSender:
@@ -15,14 +13,16 @@ class EmailSender:
         self.smtp_port = config.SMTP_PORT
         self.sender_email = config.FROM_EMAIL
         self.sender_password = config.MAIL_PASSWORD
+        self.Users = config.USERS_MAIL
 
-    def send_email_to_all(self, msg_code=0, town_id=0, page_num=0, err_msg=""):
-        for user_mail in Users:
+    def send_email_to_all(self, msg_code=99, town_id=0, page_num=0, err_msg=""):
+        for user_mail in self.Users:
             email_subject = Message[str(msg_code)]["sub"].replace("{page_num}", str(page_num)).replace("{town_id}",
                                                                                                        str(town_id))
             email_message = Message[str(msg_code)]["msg"].replace("{page_num}", str(page_num)).replace("{town_id}",
                                                                                                        str(town_id)) + err_msg
             self._send_email(to_email=user_mail, subject=email_subject, message=email_message)
+        print("------------------")
 
     def _send_email(self, to_email, subject, message):
         try:
