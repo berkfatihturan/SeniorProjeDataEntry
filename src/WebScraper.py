@@ -63,7 +63,7 @@ class WebScraper:
                 # save town_code to state.json file
                 self.StateSaver.save_last_position(town_code=town_code, page_num=page_num, counter=self.counter)
 
-                # She opens the advertisement pages one by one. If there is no ad on the page, it closes an inner loop.
+                # Opens the advertisement pages one by one. If there is no ad on the page, it closes an inner loop.
                 try:
                     # If this element is present, there is no advertisement on the page.
                     self.driver.find_element(By.CLASS_NAME, 'no-result-content')
@@ -79,8 +79,7 @@ class WebScraper:
                                                  page_num=page_num)
             # If the settlement is finished, send an e-mail to the users
             self.MsgSender.send_email_to_all(msg_code=config.MSG_CODE_TOWN_DONE, town_id=town_code)
-            # save town_code to state.json file
-            self.StateSaver.save_last_position(town_code=town_code, page_num=0, counter=self.counter)
+            current_page_num = 1
         # If process is done, send an e-mail to the users
         self.MsgSender.send_email_to_all(msg_code=config.MSG_CODE_PROCESS_DONE)
 
