@@ -57,7 +57,7 @@ class WebScraper:
             print(F"Town Code...[{town_code}]")
             for page_num in range(current_page_num, config.MAX_PAGE_NUM):
                 print(F"Page Num...[{page_num}]")
-                # The page with the advertisements opens.
+                # The page with the advertisements opens
                 self._open_ad_list_page(town_code=town_code, page_num=page_num)
 
                 # save town_code to state.json file
