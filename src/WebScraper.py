@@ -81,7 +81,7 @@ class WebScraper:
                     # If no error is received, there is no advertisement on this page. Move on to another TOWN.
                     break
                 # If the page is finished, send an e-mail to the users
-                self.MsgSender.send_email_to_all(msg_code=MSG_CODE_PAGE_DONE)
+                # self.MsgSender.send_email_to_all(msg_code=MSG_CODE_PAGE_DONE)
             # If the settlement is finished, send an e-mail to the users
             self.MsgSender.send_email_to_all(msg_code=MSG_CODE_TOWN_DONE)
         # If process is done, send an e-mail to the users
