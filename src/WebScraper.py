@@ -29,13 +29,13 @@ class WebScraper:
 
         # set chrome driver settings
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("start-maximized")
-        chrome_options.add_argument("disable-infobars")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--no-sandbox")
+        # chrome_options.add_argument("--headless")
+        # chrome_options.add_argument("start-maximized")
+        # chrome_options.add_argument("disable-infobars")
+        # chrome_options.add_argument("--disable-extensions")
+        # chrome_options.add_argument("--disable-gpu")
+        # chrome_options.add_argument("--disable-dev-shm-usage")
+        # chrome_options.add_argument("--no-sandbox")
 
         self.driver = webdriver.Chrome(service=service, options=chrome_options)
 
@@ -73,10 +73,10 @@ class WebScraper:
                 else:
                     # If no error is received, there is no advertisement on this page. Move on to another TOWN.
                     break
-
                 # If the page is finished, send an e-mail to the users
-                if page_num % 3 == 0:
+                if (page_num % 3) == 0:
                     self.MsgSender.send_email_to_all(msg_code=config.MSG_CODE_PAGE_DONE, town_id=town_code,page_num=page_num)
+
             # If the settlement is finished, send an e-mail to the users
             self.MsgSender.send_email_to_all(msg_code=config.MSG_CODE_TOWN_DONE, town_id=town_code)
             current_page_num = 1
