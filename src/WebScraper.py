@@ -75,8 +75,8 @@ class WebScraper:
                     break
 
                 # If the page is finished, send an e-mail to the users
-                self.MsgSender.send_email_to_all(msg_code=config.MSG_CODE_PAGE_DONE, town_id=town_code,
-                                                 page_num=page_num)
+                if page_num % 3 == 0:
+                    self.MsgSender.send_email_to_all(msg_code=config.MSG_CODE_PAGE_DONE, town_id=town_code,page_num=page_num)
             # If the settlement is finished, send an e-mail to the users
             self.MsgSender.send_email_to_all(msg_code=config.MSG_CODE_TOWN_DONE, town_id=town_code)
             current_page_num = 1
