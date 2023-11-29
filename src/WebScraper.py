@@ -67,6 +67,7 @@ class WebScraper:
                 try:
                     # If this element is present, there is no advertisement on the page.
                     self.driver.find_element(By.CLASS_NAME, 'no-result-content')
+                    print("[NO RESULT CONTENT]")
                 except NoSuchElementException:
                     # find all adv in page and open in order and write data to file
                     self._scrapping_ad_on_page()
