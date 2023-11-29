@@ -74,7 +74,7 @@ class WebScraper:
                     self._scrapping_ad_on_page()
                 else:
                     # If no error is received, there is no advertisement on this page. Move on to another TOWN.
-                    break;
+                    break
                 # If the page is finished, send an e-mail to the users
                 self.MsgSender.send_email_to_all(msg_code=config.MSG_CODE_PAGE_DONE, town_id=town_code,
                                                  page_num=page_num)
