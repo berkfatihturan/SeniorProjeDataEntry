@@ -85,8 +85,10 @@ class WebScraper:
         self.MsgSender.send_email_to_all(msg_code=config.MSG_CODE_PROCESS_DONE)
 
     def _scrapping_ad_on_page(self):
+        print("on_scrapping_ad_on_page")
         # find all adv in page and open in order and write data to file
         for advertItem in self.driver.find_elements(By.CSS_SELECTOR, '[id^="listing"]'):
+            print("dwasdawd")
             self._get_data_from_advertisement_page(advertItem)
             self.counter = self.counter + 1
 
