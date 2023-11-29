@@ -84,15 +84,19 @@ class WebScraper:
         # If process is done, send an e-mail to the users
         self.MsgSender.send_email_to_all(msg_code=config.MSG_CODE_PROCESS_DONE)
 
-    def _scrapping_ad_on_page(self):
+    def _scrapping_ad_on_page(self,reload_num=0):
         print("on_scrapping_ad_on_page")
         # find all adv in page and open in order and write data to file
         try:
             self.driver.find_element(By.CSS_SELECTOR,'.listing-table')
-        except:
-            print("Something happen")
-            self.driver.refresh()
-            self._scrapping_ad_on_page()
+        except Exception as e:
+            if reload_num != 10:
+                print("Something happen")
+                self.driver.refresh()
+                time.sleep(5)
+                self._scrapping_ad_on_page()
+            else:
+                print("I cant save him.")
         else:
             ad_list = self.driver.find_elements(By.CSS_SELECTOR, '.listing-list-item')
             print(len(ad_list))
