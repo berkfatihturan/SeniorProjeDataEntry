@@ -87,8 +87,10 @@ class WebScraper:
     def _scrapping_ad_on_page(self):
         print("on_scrapping_ad_on_page")
         # find all adv in page and open in order and write data to file
-        for advertItem in self.driver.find_elements(By.CSS_SELECTOR, '.listing-list-item'):
+        ad_list = self.driver.find_elements(By.CSS_SELECTOR, '.listing-list-item')
+        for advertItem in ad_list:
             print("dwasdawd")
+            print(len(ad_list))
             self._get_data_from_advertisement_page(advertItem)
             self.counter = self.counter + 1
 
