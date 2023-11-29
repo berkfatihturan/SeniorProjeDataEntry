@@ -85,23 +85,29 @@ class WebScraper:
         self.MsgSender.send_email_to_all(msg_code=config.MSG_CODE_PROCESS_DONE)
 
     def _scrapping_ad_on_page(self,reload_num=0):
-        print("on_scrapping_ad_on_page")
         # find all adv in page and open in order and write data to file
         try:
+            # Checking that the ads on the site are loaded.
             self.driver.find_element(By.CSS_SELECTOR,'.listing-table')
         except Exception as e:
-            if reload_num != 10:
-                print("Something happen")
+            # if the ads are not loaded properly and the maximum number of refreshes is not exceeded, refresh the page
+            if reload_num != config.MAX_RELOAD_NUM:
+                print("[404 NOT FOUND - TRYING AGAIN]")
+                # refresh the page
                 self.driver.refresh()
-                time.sleep(5)
-                self._scrapping_ad_on_page()
+                time.sleep(config.DATA_ER404_WAITING_TIME)
+                # call this func again
+                self._scrapping_ad_on_page(reload_num=reload_num+1)
             else:
-                print("I cant save him.")
+                # abandon this page if the maximum number of refreshes has been exceeded
+                print("[CORRUPTED - FAIL]")
+                self.MsgSender.send_email_to_all(msg_code=config.MSG_CODE_ERR)
         else:
-            ad_list = self.driver.find_elements(By.CSS_SELECTOR, '.listing-list-item')
+            # If the page loads properly, its ads will be saved in a list.
+            ad_list = self.driver.find_elements(By.CSS_SELECTOR, '.listing-list-item') # ads list
             print(len(ad_list))
             for advertItem in ad_list:
-                print("dwasdawd")
+                # open each ad on a new page and pull the data into the database
                 self._get_data_from_advertisement_page(advertItem)
                 self.counter = self.counter + 1
 
@@ -132,7 +138,7 @@ class WebScraper:
         except WebDriverException or ElementClickInterceptedException:
             print("waiting internet connection...")
             self._open_ad_list_page(town_code, page_num)
-            time.sleep(10)
+            time.sleep(config.NETWORK_ERR_WAITING_TIME)
         else:
             print("Connection Ok...[Main Page Loaded]")
         finally:
@@ -144,7 +150,7 @@ class WebScraper:
                 self.driver.get(ad_link)
             except WebDriverException:
                 print("waiting internet connection...")
-                time.sleep(10)
+                time.sleep(config.NETWORK_ERR_WAITING_TIME)
             else:
                 print("Connection Ok...[Ad Page Loaded]")
                 break
