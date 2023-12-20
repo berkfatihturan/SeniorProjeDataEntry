@@ -1,5 +1,4 @@
 import time
-import json
 
 from src.EmailSender import EmailSender
 from src.DatabaseHandler import DatabaseHandler
@@ -29,13 +28,13 @@ class WebScraper:
 
         # set chrome driver settings
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("start-maximized")
-        chrome_options.add_argument("disable-infobars")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--no-sandbox")
+        #chrome_options.add_argument("--headless")
+        #chrome_options.add_argument("start-maximized")
+        #chrome_options.add_argument("disable-infobars")
+        #chrome_options.add_argument("--disable-extensions")
+        #chrome_options.add_argument("--disable-gpu")
+        #chrome_options.add_argument("--disable-dev-shm-usage")
+        #chrome_options.add_argument("--no-sandbox")
 
         self.driver = webdriver.Chrome(service=service, options=chrome_options)
 
@@ -133,6 +132,7 @@ class WebScraper:
 
     def _open_ad_list_page(self, town_code, page_num):
         try:
+
             self.driver.get(f"{self.url}&town={town_code}&page={page_num}")
         except WebDriverException or ElementClickInterceptedException:
             print("waiting internet connection...")

@@ -2,7 +2,7 @@ from src.WebScraper import WebScraper
 from src.EmailSender import EmailSender
 import config
 
-url = "https://www.arabam.com/ikinci-el?take=50"
+url = config.BASE_URL
 print(open('data/header.txt','r').read())
 CarScraper = WebScraper(url=url)
 try:
