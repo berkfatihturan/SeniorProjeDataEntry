@@ -35,6 +35,6 @@ DB_COLLECTION = "cars"
 SAVE_FILE_PATH = './data/state.json'
 MESSAGE_FILE_PATH = 'data/message_records.json'
 # Fill with your driver path
-CHROME_DRIVER_PATH = "/Users/berkfatihturan/Desktop/bft/Projects/Python/SeniorProject/SeniorProjeDataEntry/chromedriver"
+CHROME_DRIVER_PATH = "/usr/lib/chromium-browser/chromedriver"
 
 
